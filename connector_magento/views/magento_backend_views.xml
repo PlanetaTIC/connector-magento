@@ -110,7 +110,7 @@
                                         name="import_customer_groups"
                                         type="object"
                                         class="oe_highlight"
-                                        string="Import in background"
+                                        title="Import in background"
                                     />
                                 </div>
                             </group>
@@ -124,7 +124,7 @@
                                     name="import_partners"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import in background"
+                                    title="Import in background"
                                 />
                             </group>
                             <group>
@@ -144,7 +144,7 @@
                                     name="import_product_categories"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import in background"
+                                    title="Import in background"
                                 />
                             </group>
                             <group>
@@ -164,7 +164,7 @@
                                     name="import_product_product"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import in background"
+                                    title="Import in background"
                                 />
                             </group>
                             <group>
@@ -177,7 +177,7 @@
                                     name="import_sale_orders"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import in background"
+                                    title="Import in background"
                                 />
                             </group>
                             <group>
@@ -190,7 +190,7 @@
                                     name="update_product_stock_qty"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Update"
+                                    title="Update"
                                 />
                             </group>
                         </page>
@@ -307,7 +307,7 @@
                                     name="import_partners"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import in background"
+                                    title="Import in background"
                                 />
                             </group>
                         </page>
@@ -485,7 +485,7 @@
                                     name="import_sale_orders"
                                     type="object"
                                     class="oe_highlight"
-                                    string="Import Sale Orders"
+                                    title="Import Sale Orders"
                                     attrs="{'invisible': [('no_sales_order_sync', '=', True)]}"
                                 />
                             </group>
