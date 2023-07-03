@@ -65,7 +65,8 @@ class MagentoBindingBackendRead(models.TransientModel):
             )
             return []
         component_classes = components_registry.lookup(
-            collection_name="magento.backend", usage="backend.adapter",
+            collection_name="magento.backend",
+            usage="backend.adapter",
         )
         ret = []
         for component_class in component_classes:
