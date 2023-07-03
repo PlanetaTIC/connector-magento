@@ -36,9 +36,13 @@ class MagentoBackend(models.Model):
 
     @api.model
     def _get_stock_field_id(self):
-        field = self.env["ir.model.fields"].sudo().search(
-            [("model", "=", "product.product"), ("name", "=", "virtual_available")],
-            limit=1,
+        field = (
+            self.env["ir.model.fields"]
+            .sudo()
+            .search(
+                [("model", "=", "product.product"), ("name", "=", "virtual_available")],
+                limit=1,
+            )
         )
         return field
 
