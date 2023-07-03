@@ -228,7 +228,7 @@ class TestUpdateStockQty(MagentoSyncTestCase):
         # we mock the job so we can check it .delay() is called on it
         # when the quantity is changed
         with self.mock_with_delay() as (delayable_cls, delayable):
-            binding.refresh()
+            binding.invalidate_model()
             binding.recompute_magento_qty()
             self.assertEqual(binding.magento_qty, 5.0)
 
