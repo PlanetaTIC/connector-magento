@@ -4,7 +4,7 @@
 
 {
     "name": "Magento Connector",
-    "version": "13.0.0.0.0",
+    "version": "14.0.0.0.0",
     "category": "Connector",
     "depends": [
         "account",
@@ -16,7 +16,7 @@
         "connector_ecommerce",
     ],
     "external_dependencies": {"python": ["magento"]},
-    "author": "Camptocamp,Akretion,Sodexis,Odoo Community Association (OCA)",
+    "author": "Camptocamp,Akretion,Sodexis,PlanetaTIC,Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/connector-magento",
     "images": [
