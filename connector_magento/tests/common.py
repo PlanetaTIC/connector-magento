@@ -78,7 +78,7 @@ class MagentoHelper(object):
 
 
 class MagentoTestCase(SavepointComponentCase):
-    """ Base class - Test the imports from a Magento Mock.
+    """Base class - Test the imports from a Magento Mock.
 
     The data returned by Magento are those created for the
     demo version of Magento on a standard 1.9 version.
@@ -192,7 +192,7 @@ class MagentoTestCase(SavepointComponentCase):
         return binding
 
     def assert_records(self, expected_records, records):
-        """ Assert that a recordset matches with expected values.
+        """Assert that a recordset matches with expected values.
 
         The expected records are a list of nametuple, the fields of the
         namedtuple must have the same name than the recordset's fields.

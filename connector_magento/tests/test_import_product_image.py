@@ -32,7 +32,7 @@ B64_PNG_IMG_4PX_GREEN = b64encode(PNG_IMG_4PX_GREEN)
 
 
 class TestImportProductImage(TransactionComponentRegistryCase):
-    """ Test the imports of the image of the products. """
+    """Test the imports of the image of the products."""
 
     def setUp(self):
         super(TestImportProductImage, self).setUp()
@@ -126,7 +126,7 @@ class TestImportProductImage(TransactionComponentRegistryCase):
         )
 
     def test_image_priority(self):
-        """ Check if the images are sorted in the correct priority """
+        """Check if the images are sorted in the correct priority"""
         file1 = {"file": "file1", "types": ["image"], "position": "10"}
         file2 = {"file": "file2", "types": ["thumbnail"], "position": "3"}
         file3 = {"file": "file3", "types": ["thumbnail"], "position": "4"}
@@ -137,7 +137,7 @@ class TestImportProductImage(TransactionComponentRegistryCase):
         )
 
     def test_import_images_404(self):
-        """ An image responds a 404 error, skip and take the first valid """
+        """An image responds a 404 error, skip and take the first valid"""
         url_tee1 = (
             "http://localhost:9100/media/catalog/product"
             "/i/n/ink-eater-krylon-bombear-destroyed-tee-1.jpg"
@@ -170,7 +170,7 @@ class TestImportProductImage(TransactionComponentRegistryCase):
         )
 
     def test_import_images_403(self):
-        """ Import a product when an image respond a 403 error, should fail """
+        """Import a product when an image respond a 403 error, should fail"""
 
         binding = mock.Mock(name="magento.product.product,999")
         binding.id = 999

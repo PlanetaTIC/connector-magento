@@ -49,7 +49,7 @@ class PartnerCategoryAdapter(Component):
     # _admin2_path = '/customer/group/edit/id/{id}'
 
     def search(self, filters=None):
-        """ Search records according to some criterias
+        """Search records according to some criterias
         and returns a list of ids
 
         :rtype: list
