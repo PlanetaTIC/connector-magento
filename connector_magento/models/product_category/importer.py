@@ -19,17 +19,37 @@ class ProductCategoryBatchImporter(Component):
     _inherit = "magento.delayed.batch.importer"
     _apply_on = ["magento.product.category"]
 
-    def _import_record(self, external_id, job_options=None):
-        """Delay a job for the import"""
-        super(ProductCategoryBatchImporter, self)._import_record(
-            external_id, job_options=job_options
-        )
+    # def _import_record(self, external_id):
+    #     """Delay a job for the import"""
+    #     super().with_delay()._import_record(external_id)
 
     def run(self, filters=None):
         """Run the synchronization"""
-        if self.collection.version == "2.0":
-            # TODO. See 8.0 version
-            raise NotImplementedError
+        # if self.collection.version == "2.0":
+        #     # TODO. See 8.0 version
+        #     raise NotImplementedError
+        def import_nodes(tree, level=0):
+            if self.collection.version == "1.7":
+                for node_id, children in list(tree.items()):
+                    # By changing the priority, the top level category has
+                    # more chance to be imported before the childrens.
+                    # However, importers have to ensure that their parent is
+                    # there and import it if it doesn't exist
+                    if updated_ids is None or node_id in updated_ids:
+                        self._import_record(node_id)
+                    import_nodes(children, level=level + 1)
+            elif self.collection.version == "2.0":
+                if isinstance(tree, dict):
+                    magento_categ_id = tree["id"]
+                    self._import_record(magento_categ_id)
+                    if tree.get("children_data", []):
+                        import_nodes(tree["children_data"], level=level+1)
+                else: # is a list
+                    for categ_dict in tree:
+                        magento_categ_id = categ_dict["id"]
+                        self._import_record(magento_categ_id)
+
+        tree = self.backend_adapter.tree()
         from_date = filters.pop("from_date", None)
         to_date = filters.pop("to_date", None)
         if from_date or to_date:
@@ -40,21 +60,6 @@ class ProductCategoryBatchImporter(Component):
             updated_ids = None
 
         base_priority = 10
-
-        def import_nodes(tree, level=0):
-            for node_id, children in list(tree.items()):
-                # By changing the priority, the top level category has
-                # more chance to be imported before the childrens.
-                # However, importers have to ensure that their parent is
-                # there and import it if it doesn't exist
-                if updated_ids is None or node_id in updated_ids:
-                    job_options = {
-                        "priority": base_priority + level,
-                    }
-                    self._import_record(node_id, job_options=job_options)
-                import_nodes(children, level=level + 1)
-
-        tree = self.backend_adapter.tree()
         import_nodes(tree)
 
 
@@ -71,8 +76,7 @@ class ProductCategoryImporter(Component):
         self._import_dependency(record.get("parent_id"), self.model)
 
     def _create(self, data):
-        binding = super(ProductCategoryImporter, self)._create(data)
-        self.backend_record.add_checkpoint(binding)
+        binding = super()._create(data)
         return binding
 
     def _after_import(self, binding):

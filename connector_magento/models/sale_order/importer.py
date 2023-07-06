@@ -22,14 +22,10 @@ class SaleOrderBatchImporter(Component):
     _inherit = "magento.delayed.batch.importer"
     _apply_on = "magento.sale.order"
 
-    def _import_record(self, external_id, job_options=None, **kwargs):
-        job_options = {
-            "max_retries": 0,
-            "priority": 5,
-        }
-        return super(SaleOrderBatchImporter, self)._import_record(
-            external_id, job_options=job_options
-        )
+    # def _import_record(self, external_id, **kwargs):
+    #     return super()._import_record(
+    #         external_id, job_options=job_options
+    #     )
 
     def run(self, filters=None):
         """Run the synchronization"""
@@ -157,20 +153,34 @@ class SaleOrderImportMapper(Component):
     ]
 
     def _add_shipping_line(self, map_record, values):
+        carrier_obj = self.env["delivery.carrier"]
+        product_obj = self.env["product.product"]
+
         record = map_record.source
         discount = float(record.get("shipping_discount_amount") or 0.0)
-        if self.options.tax_include:
-            amount = float(record.get("base_shipping_incl_tax") or 0.0) - discount
+        base_shipping_tax_incl = float(record.get("base_shipping_incl_tax") or 0.0)
+        base_shipping_tax_excl = float(record.get("shipping_amount") or 0.0)
+
+        if values.get("carrier_id"):
+            carrier = carrier_obj.browse(values["carrier_id"])
+            ship_product = carrier.product_id
         else:
-            amount = float(record.get("shipping_amount") or 0.0) - discount
+            ship_product = product_obj.search([("default_code", "=", "SHIP")], limit=1)
+
+        if ship_product.taxes_id.price_include:
+            amount = base_shipping_tax_incl
+        else:
+            if base_shipping_tax_excl == base_shipping_tax_incl:
+                # price is tax included: compute price tax_excl:
+                base_shipping_tax_excl = base_shipping_tax_incl / (1 + (ship_product.taxes_id.amount/100.0))
+            amount = base_shipping_tax_excl
+        amount -= discount
+        
         line_builder = self.component(usage="order.line.builder.shipping")
         # add even if the price is 0, otherwise odoo will add a shipping
         # line in the order when we ship the picking
         line_builder.price_unit = amount
-
-        if values.get("carrier_id"):
-            carrier = self.env["delivery.carrier"].browse(values["carrier_id"])
-            line_builder.product = carrier.product_id
+        line_builder.product = ship_product
 
         line = (0, 0, line_builder.get_line())
         values["order_line"].append(line)
@@ -510,9 +520,10 @@ class SaleOrderImporter(Component):
             current_binding = parent_binding
 
     def _create(self, data):
-        binding = super(SaleOrderImporter, self)._create(data)
+        binding = super()._create(data)
         if binding.fiscal_position_id:
-            binding.odoo_id._compute_tax_id()
+            for line in binding.odoo_id.order_line:
+                line._compute_tax_id()
         return binding
 
     def _after_import(self, binding):
@@ -527,7 +538,7 @@ class SaleOrderImporter(Component):
 
     def _get_magento_data(self):
         """Return the raw Magento data for ``self.external_id``"""
-        record = super(SaleOrderImporter, self)._get_magento_data()
+        record = super()._get_magento_data()
         # sometimes we don't have website_id...
         # we fix the record!
         if not record.get("website_id"):
@@ -706,7 +717,7 @@ class SaleOrderImporter(Component):
     def _create_data(self, map_record, **kwargs):
         storeview = self._get_storeview(map_record.source)
         self._check_special_fields()
-        return super(SaleOrderImporter, self)._create_data(
+        return super()._create_data(
             map_record,
             tax_include=storeview.catalog_price_tax_included,
             partner_id=self.partner_id,
@@ -719,7 +730,7 @@ class SaleOrderImporter(Component):
     def _update_data(self, map_record, **kwargs):
         storeview = self._get_storeview(map_record.source)
         self._check_special_fields()
-        return super(SaleOrderImporter, self)._update_data(
+        return super()._update_data(
             map_record,
             tax_include=storeview.catalog_price_tax_included,
             partner_id=self.partner_id,

@@ -10,8 +10,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import ustr
 
-from odoo.addons.connector.models.checkpoint import add_checkpoint
-
 from ...components.backend_adapter import MagentoAPI, MagentoLocation
 
 _logger = logging.getLogger(__name__)
@@ -221,15 +219,10 @@ class MagentoBackend(models.Model):
         # through all the sync session, instead of recreating a client
         # in each backend adapter usage.
         with MagentoAPI(magento_location) as magento_api:
-            _super = super(MagentoBackend, self)
+            _super = super()
             # from the components we'll be able to do: self.work.magento_api
             with _super.work_on(model_name, magento_api=magento_api, **kwargs) as work:
                 yield work
-
-    def add_checkpoint(self, record):
-        self.ensure_one()
-        record.ensure_one()
-        return add_checkpoint(self.env, record._name, record.id, self._name, self.id)
 
     def synchronize_metadata(self):
         try:
@@ -286,7 +279,7 @@ class MagentoBackend(models.Model):
             else:
                 from_date = None
             self.env[model].with_delay().import_batch(
-                backend, filters={"from_date": from_date, "to_date": import_start_time}
+                backend, filters={"from_date": from_date}
             )
         # Records from Magento are imported based on their `created_at`
         # date.  This date is set on Magento at the beginning of a

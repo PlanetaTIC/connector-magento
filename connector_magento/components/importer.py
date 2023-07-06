@@ -33,7 +33,7 @@ class MagentoImporter(AbstractComponent):
     _usage = "record.importer"
 
     def __init__(self, work_context):
-        super(MagentoImporter, self).__init__(work_context)
+        super().__init__(work_context)
         self.external_id = None
         self.magento_record = None
 
@@ -268,10 +268,10 @@ class DelayedBatchImporter(AbstractComponent):
     _name = "magento.delayed.batch.importer"
     _inherit = "magento.batch.importer"
 
-    def _import_record(self, external_id, job_options=None, **kwargs):
+    def _import_record(self, external_id, **kwargs):
         """Delay the import of the records"""
-        delayable = self.model.with_delay(**job_options or {})
-        delayable.import_record(self.backend_record, external_id, **kwargs)
+        self.model.with_delay().import_record(
+            self.backend_record, external_id, **kwargs)
 
 
 class SimpleRecordImporter(Component):

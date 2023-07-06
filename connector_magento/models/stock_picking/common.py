@@ -9,7 +9,6 @@ from odoo import fields, models
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.exception import IDMissingInBackend
-from odoo.addons.queue_job.job import job, related_action
 
 _logger = logging.getLogger(__name__)
 
@@ -37,8 +36,6 @@ class MagentoStockPicking(models.Model):
         required=True,
     )
 
-    @job(default_channel="root.magento")
-    @related_action(action="related_action_unwrap_binding")
     def export_tracking_number(self):
         """Export the tracking number of a delivery order."""
         self.ensure_one()
@@ -46,8 +43,6 @@ class MagentoStockPicking(models.Model):
             exporter = work.component(usage="tracking.exporter")
             return exporter.run(self)
 
-    @job(default_channel="root.magento")
-    @related_action(action="related_action_unwrap_binding")
     def export_picking_done(self, with_tracking=True):
         """Export a complete or partial delivery order."""
         # with_tracking is True to keep a backward compatibility (jobs that
@@ -83,7 +78,7 @@ class StockPickingAdapter(Component):
 
     def _call(self, method, arguments, http_method=None, storeview=None):
         try:
-            return super(StockPickingAdapter, self)._call(
+            return super()._call(
                 method, arguments, http_method=http_method, storeview=storeview
             )
         except xmlrpc.client.Fault as err:

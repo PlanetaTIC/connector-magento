@@ -42,6 +42,5 @@ class StoreviewImporter(Component):
     _apply_on = "magento.storeview"
 
     def _create(self, data):
-        binding = super(StoreviewImporter, self)._create(data)
-        self.backend_record.add_checkpoint(binding)
+        binding = super()._create(data)
         return binding

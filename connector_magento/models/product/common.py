@@ -13,7 +13,6 @@ from odoo.tools.translate import _
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 from odoo.addons.connector.exception import IDMissingInBackend
-from odoo.addons.queue_job.job import job, related_action
 
 from ...components.backend_adapter import MAGENTO_DATETIME_FORMAT
 
@@ -104,8 +103,6 @@ class MagentoProductProduct(models.Model):
 
     RECOMPUTE_QTY_STEP = 1000  # products at a time
 
-    @job(default_channel="root.magento")
-    @related_action(action="related_action_unwrap_binding")
     def export_inventory(self, fields=None):
         """Export the inventory configuration and quantity of a product."""
         self.ensure_one()
@@ -219,7 +216,7 @@ class ProductProductAdapter(Component):
 
     def _call(self, method, arguments, http_method=None, storeview=None):
         try:
-            return super(ProductProductAdapter, self)._call(
+            return super()._call(
                 method, arguments, http_method=http_method, storeview=storeview
             )
         except xmlrpc.client.Fault as err:
@@ -253,7 +250,7 @@ class ProductProductAdapter(Component):
                     "%s.list" % self._magento_model, [filters] if filters else [{}]
                 )
             ]
-        return super(ProductProductAdapter, self).search(filters=filters)
+        return super().search(filters=filters)
 
     def read(self, external_id, storeview_id=None, attributes=None):
         """Returns the information of a record
@@ -266,7 +263,7 @@ class ProductProductAdapter(Component):
                 "ol_catalog_product.info",
                 [int(external_id), storeview_id, attributes, "id"],
             )
-        res = super(ProductProductAdapter, self).read(
+        res = super().read(
             external_id, attributes=attributes, storeview=storeview_id
         )
         if res:

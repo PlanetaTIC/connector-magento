@@ -9,7 +9,6 @@ from odoo import fields, models
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.exception import IDMissingInBackend
-from odoo.addons.queue_job.job import job, related_action
 
 _logger = logging.getLogger(__name__)
 
@@ -39,8 +38,6 @@ class MagentoAccountInvoice(models.Model):
         )
     ]
 
-    @job(default_channel="root.magento")
-    @related_action(action="related_action_unwrap_binding")
     def export_record(self):
         """Export a validated or paid invoice."""
         self.ensure_one()
@@ -77,7 +74,7 @@ class AccountInvoiceAdapter(Component):
 
     def _call(self, method, arguments, http_method=None):
         try:
-            return super(AccountInvoiceAdapter, self)._call(
+            return super()._call(
                 method, arguments, http_method=http_method
             )
         except xmlrpc.client.Fault as err:
@@ -121,7 +118,7 @@ class AccountInvoiceAdapter(Component):
             filters = {}
         if order_id is not None:
             filters["order_id"] = {"eq": order_id}
-        return super(AccountInvoiceAdapter, self).search_read(filters=filters)
+        return super().search_read(filters=filters)
 
 
 class MagentoBindingInvoiceListener(Component):

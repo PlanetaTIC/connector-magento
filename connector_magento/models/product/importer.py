@@ -230,9 +230,15 @@ class ProductImportMapper(Component):
     @mapping
     def type(self, record):
         if record["type_id"] == "simple":
-            return {"type": "product"}
+            return {
+                "type": "product",
+                "detailed_type": "product"
+            }
         elif record["type_id"] in ("virtual", "downloadable", "giftcard"):
-            return {"type": "service"}
+            return {
+                "type": "service",
+                "detailed_type": "product"
+            }
         return
 
     @mapping
@@ -369,7 +375,6 @@ class ProductImporter(Component):
         if not binding.active:
             # Disable reordering rules that has been created automatically
             binding.orderpoint_ids.write({"active": False})
-        self.backend_record.add_checkpoint(binding)
         return binding
 
     def _update(self, binding, data):

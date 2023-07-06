@@ -331,7 +331,7 @@ msgstr ""
 
 #. module: connector_magento
 #: model:ir.model.fields,help:connector_magento.field_magento_backend__token
-msgid "Authentication token for Magento 2.0+. See https://devdocs. magento.com/guides/v2.3/get-started/authentication/gs-authentication-token.html"
+msgid "Authentication token for Magento 2.0+. See https://devdocs.magento.com/guides/v2.3/get-started/authentication/gs-authentication-token.html"
 msgstr ""
 
 #. module: connector_magento
