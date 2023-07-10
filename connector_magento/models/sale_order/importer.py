@@ -153,34 +153,20 @@ class SaleOrderImportMapper(Component):
     ]
 
     def _add_shipping_line(self, map_record, values):
-        carrier_obj = self.env["delivery.carrier"]
-        product_obj = self.env["product.product"]
-
         record = map_record.source
         discount = float(record.get("shipping_discount_amount") or 0.0)
-        base_shipping_tax_incl = float(record.get("base_shipping_incl_tax") or 0.0)
-        base_shipping_tax_excl = float(record.get("shipping_amount") or 0.0)
-
-        if values.get("carrier_id"):
-            carrier = carrier_obj.browse(values["carrier_id"])
-            ship_product = carrier.product_id
+        if self.options.tax_include:
+            amount = float(record.get("base_shipping_incl_tax") or 0.0) - discount
         else:
-            ship_product = product_obj.search([("default_code", "=", "SHIP")], limit=1)
-
-        if ship_product.taxes_id.price_include:
-            amount = base_shipping_tax_incl
-        else:
-            if base_shipping_tax_excl == base_shipping_tax_incl:
-                # price is tax included: compute price tax_excl:
-                base_shipping_tax_excl = base_shipping_tax_incl / (1 + (ship_product.taxes_id.amount/100.0))
-            amount = base_shipping_tax_excl
-        amount -= discount
-        
+            amount = float(record.get("shipping_amount") or 0.0) - discount
         line_builder = self.component(usage="order.line.builder.shipping")
         # add even if the price is 0, otherwise odoo will add a shipping
         # line in the order when we ship the picking
         line_builder.price_unit = amount
-        line_builder.product = ship_product
+
+        if values.get("carrier_id"):
+            carrier = self.env["delivery.carrier"].browse(values["carrier_id"])
+            line_builder.product = carrier.product_id
 
         line = (0, 0, line_builder.get_line())
         values["order_line"].append(line)
