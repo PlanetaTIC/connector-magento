@@ -262,8 +262,19 @@ class GenericAdapter(AbstractComponent):
         Presumably, filter_groups are joined with AND, while filters in the
         same group are joined with OR (not supported here).
         """
+        def get_page_searchCriteria(filters):
+            filters = filters or {}
+            page_criteria = {}
+            if "pageSize" in filters:
+                page_size = filters.pop("pageSize", False)
+                page_criteria["searchCriteria[pageSize]"] = page_size
+            if "current_page" in filters:
+                current_page = filters.pop("current_page", False)
+                page_criteria["searchCriteria[current_page]"] = current_page
+            return page_criteria
         filters = filters or {}
         res = {}
+        page_criteria = get_page_searchCriteria(filters)
         count = 0
         expr = "searchCriteria[filter_groups][%s][filters][0][%s]"
         # http://devdocs.magento.com/guides/v2.0/howdoi/webapi/\
@@ -300,8 +311,15 @@ class GenericAdapter(AbstractComponent):
                 )
                 count += 1
         _logger.debug("searchCriteria %s from %s", res, filters)
-        return res if res else {"searchCriteria": ""}
-
+        if page_criteria:
+            # merge dictionaries:
+            res.update(page_criteria)
+        elif not res:
+            res = {
+                "searchCriteria": "",
+            }
+        return res
+    
     def search(self, filters=None):
         """Search records according to some criterias
         and returns a list of unique identifiers

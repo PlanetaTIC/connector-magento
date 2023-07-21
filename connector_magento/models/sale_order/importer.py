@@ -35,17 +35,25 @@ class SaleOrderBatchImporter(Component):
         from_date = filters.pop("from_date", None)
         to_date = filters.pop("to_date", None)
         magento_storeview_ids = [filters.pop("magento_storeview_id")]
-        external_ids = self.backend_adapter.search(
-            filters,
-            from_date=from_date,
-            to_date=to_date,
-            magento_storeview_ids=magento_storeview_ids,
-        )
-        _logger.info(
-            "search for magento saleorders %s returned %s", filters, external_ids
-        )
-        for external_id in external_ids:
-            self._import_record(external_id)
+        pagesize = 20
+        current_page = 0
+        while True:
+            filters["pageSize"] = pagesize
+            filters["current_page"] = current_page
+            external_ids = self.backend_adapter.search(
+                filters,
+                from_date=from_date,
+                to_date=to_date,
+                magento_storeview_ids=magento_storeview_ids,
+            )
+            _logger.info(
+                "search for magento saleorders %s returned %s", filters, external_ids
+            )
+            if not external_ids:
+                break
+            for external_id in external_ids:
+                self._import_record(external_id)
+            current_page += 1
 
 
 class SaleImportRule(Component):
