@@ -33,7 +33,7 @@ class MagentoSaleOrder(models.Model):
         string="Magento Order Lines",
     )
     total_amount = fields.Float(string="Total amount", digits="Account")
-    total_amount_tax = fields.Float(string="Total amount w. tax", digits="Account")
+    total_amount_tax = fields.Float(string="Total amount with tax", digits="Account")
     magento_order_id = fields.Integer(
         string="Magento Order ID", help="'order_id' field in Magento"
     )
@@ -75,6 +75,7 @@ class SaleOrder(models.Model):
         comodel_name="magento.sale.order",
         inverse_name="odoo_id",
         string="Magento Bindings",
+        copy=False,
     )
 
     @api.depends("magento_bind_ids", "magento_bind_ids.magento_parent_id")
@@ -114,27 +115,6 @@ class SaleOrder(models.Model):
         if vals.get("state") == "cancel":
             self._magento_cancel()
         return super().write(vals)
-
-    def _magento_link_binding_of_copy(self, new):
-        # link binding of the canceled order to the new order, so the
-        # operations done on the new order will be sync'ed with Magento
-        if self.state != "cancel":
-            return
-        binding_model = self.env["magento.sale.order"]
-        bindings = binding_model.search([("odoo_id", "=", self.id)])
-        bindings.write({"odoo_id": new.id})
-
-        for binding in bindings:
-            # the sales' status on Magento is likely 'canceled'
-            # so we will export the new status (pending, processing, ...)
-            job_descr = _("Reopen sales order %s") % (binding.external_id,)
-            binding.with_delay(description=job_descr).export_state_change()
-
-    def copy(self, default=None):
-        self_copy = self.with_context(__copy_from_quotation=True)
-        new = super(SaleOrder, self_copy).copy(default=default)
-        self_copy._magento_link_binding_of_copy(new)
-        return new
 
 
 class MagentoSaleOrderLine(models.Model):
