@@ -95,10 +95,11 @@ class PartnerImportMapper(Component):
             category = binder.to_internal(record["group_id"], unwrap=True)
 
         if not category:
-            raise MappingError(
-                "The partner category with "
-                "magento id %s does not exist" % record["group_id"]
-            )
+            # raise MappingError(
+            #     "The partner category with "
+            #     "magento id %s does not exist" % record["group_id"]
+            # )
+            return {"category_id": False}
 
         # FIXME: should remove the previous tag (all the other tags from
         # the same backend)
