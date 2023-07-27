@@ -248,7 +248,7 @@ class ProductImportMapper(Component):
         elif record["type_id"] in ("virtual", "downloadable", "giftcard"):
             return {
                 "type": "service",
-                "detailed_type": "product"
+                "detailed_type": "service"
             }
         return
 
