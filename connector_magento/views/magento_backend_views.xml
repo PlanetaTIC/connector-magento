@@ -219,6 +219,7 @@
                                 />
                                 <field name="fiscal_position_id" />
                                 <field name="is_multi_company" />
+                                <field name="default_product_storeview_id" />
                             </group>
                         </page>
                         <page name="website" string="Websites">

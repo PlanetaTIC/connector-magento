@@ -412,6 +412,17 @@ class ProductImporter(Component):
             bundle_importer = self.component(usage="product.bundle.importer")
             bundle_importer.run(binding, self.magento_record)
 
+    def _get_magento_data(self, storeview=None):
+        storeview_code = None
+        if self.backend_record.default_product_storeview_id:
+            storeview_code = self.backend_record.default_product_storeview_id.code
+
+        if storeview_code:
+            res = self.backend_adapter.read(self.external_id, storeview_id=storeview_code)
+        else:
+            res = super()._get_magento_data()
+        return res
+
 
 class ProductInventoryExporter(Component):
     _name = "magento.product.product.exporter"
