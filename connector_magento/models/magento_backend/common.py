@@ -175,6 +175,11 @@ class MagentoBackend(models.Model):
         "level. "
         "When import partner, ignore company_id if this flag is set.",
     )
+    default_product_storeview_id = fields.Many2one(
+        comodel_name="magento.storeview",
+        srting="Default Product Store",
+        help="Store where to get the product prices from. If unset, will get what Magento's API indicates without specifying store"
+    )
 
     _sql_constraints = [
         (
