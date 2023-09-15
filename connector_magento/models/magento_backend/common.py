@@ -177,7 +177,7 @@ class MagentoBackend(models.Model):
     )
     default_product_storeview_id = fields.Many2one(
         comodel_name="magento.storeview",
-        srting="Default Product Store",
+        string="Default Product Store",
         help="Store where to get the product prices from. If unset, will get what Magento's API indicates without specifying store"
     )
 
