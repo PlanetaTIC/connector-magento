@@ -766,9 +766,9 @@ class SaleOrderLineImportMapper(Component):
     def discount_amount(self, record):
         discount_value = float(record.get("discount_amount") or 0)
         if self.options.tax_include:
-            row_total = float(record.get("row_total_incl_tax") or 0)
+            row_total = float(record.get("row_total_incl_tax") or 0) + discount_value
         else:
-            row_total = float(record.get("row_total") or 0)
+            row_total = float(record.get("row_total") or 0) + discount_value
         discount = 0
         if discount_value > 0 and row_total > 0:
             discount = 100 * discount_value / row_total
