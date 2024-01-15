@@ -850,3 +850,7 @@ class SaleOrderLineImportMapper(Component):
         else:
             total = base_row_total
         return {"price_unit": (total + discount_amount) / qty_ordered}
+
+    @mapping
+    def company_id(self, record):
+        return {"company_id": self.backend_record.company_id.id}
