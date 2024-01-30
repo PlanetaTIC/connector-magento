@@ -264,6 +264,9 @@ class PartnerAddressBook(Component):
                     values = map_record.values(parent_partner=parent)
                     partner_binding.write(values)
                 else:
+                    # for B2C individual customers, merge with the main
+                    # partner
+                    merge = False
                     # in the case if the billing address no longer
                     # has a company, reset the flag
                     partner_binding.write({"consider_as_company": False})
