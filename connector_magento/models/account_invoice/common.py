@@ -169,7 +169,7 @@ class MagentoInvoiceListener(Component):
 
                 if (
                     create_invoice == "paid"
-                    and invoice.invoice_payment_state == create_invoice
+                    and invoice.payment_state == create_invoice
                 ) or (create_invoice == "open" and invoice.state == "posted"):
                     self.env["magento.account.move"].create(
                         {
