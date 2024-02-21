@@ -78,6 +78,7 @@
                 
                     <group name="main_configuration" string="Main Configuration">
                         <field name="warehouse_id" />
+                        <field name="discount_product_id" />
                     </group>
                     <notebook>
                         <page name="import" string="Imports">

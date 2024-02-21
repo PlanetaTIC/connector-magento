@@ -176,7 +176,33 @@ class SaleOrderImportMapper(Component):
             carrier = self.env["delivery.carrier"].browse(values["carrier_id"])
             line_builder.product = carrier.product_id
 
-        line = (0, 0, line_builder.get_line())
+        line_vals = line_builder.get_line()
+        shipping_description = record.get("shipping_description", False)
+        if shipping_description:
+            line_vals["name"] = shipping_description
+        line = (0, 0, line_vals)
+        
+        values["order_line"].append(line)
+        return values
+
+    def _add_discount_line(self, map_record, values):
+        record = map_record.source
+        if self.options.tax_include:
+            discount_amount = float(record.get("discount_amount") or 0.0)
+        else:
+            # TODO: check taxes excluded:
+            discount_amount = float(record.get("base_discount_amount") or 0.0)
+        if not discount_amount:
+            # NO discount to apply
+            return values
+        discount_product = self.backend_record.discount_product_id
+        line_vals = {
+            "product_id": discount_product.id,
+            "name": record.get("discount_description", False),
+            "price_unit": -1 * discount_amount,
+            "company_id": self.backend_record.company_id.id,
+        }
+        line = (0, 0, line_vals)
         values["order_line"].append(line)
         return values
 
@@ -259,6 +285,7 @@ class SaleOrderImportMapper(Component):
     def finalize(self, map_record, values):
         values.setdefault("order_line", [])
         values = self._add_shipping_line(map_record, values)
+        values = self._add_discount_line(map_record, values)
         values = self._add_cash_on_delivery_line(map_record, values)
         values = self._add_gift_certificate_line(map_record, values)
         values = self._add_gift_cards_line(map_record, values)

@@ -1203,6 +1203,11 @@ msgid "Discount (%)"
 msgstr ""
 
 #. module: connector_magento
+#: model:ir.model.fields,field_description:connector_magento.field_magento_backend__discount_product_id
+msgid "Discount Product"
+msgstr "Producto de descuento"
+
+#. module: connector_magento
 #: model:ir.model.fields,field_description:connector_magento.field_magento_account_move__display_name
 #: model:ir.model.fields,field_description:connector_magento.field_magento_address__display_name
 #: model:ir.model.fields,field_description:connector_magento.field_magento_backend__display_name

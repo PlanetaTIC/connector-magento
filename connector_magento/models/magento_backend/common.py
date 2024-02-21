@@ -180,6 +180,10 @@ class MagentoBackend(models.Model):
         string="Default Product Store",
         help="Store where to get the product prices from. If unset, will get what Magento's API indicates without specifying store"
     )
+    discount_product_id = fields.Many2one(
+        comodel_name="product.product",
+        string="Discount Product",
+    )
 
     _sql_constraints = [
         (
